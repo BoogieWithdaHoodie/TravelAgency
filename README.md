@@ -1,0 +1,1 @@
+a travel agency site. A grid of tour packages with duration and price, a testimonials section, and a Plan your trip call to action instead of a shop link, with a destination photo hero.
