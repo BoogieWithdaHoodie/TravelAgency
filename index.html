@@ -3,84 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Agency</title>
+    <meta name="description" content="Thoughtfully planned trips to the world's most memorable destinations.">
+    <title>Travel Agency | Find your next great escape</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <nav> 
-            <a href="#" class="logo">Travel<span>Agency</span></a>
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Main navigation">
+            <a href="#hero" class="logo" aria-label="Travel Agency home">Travel<span>Agency</span></a>
             <ul class="nav-links">
-
                 <li><a href="#hero">Home</a></li>
                 <li><a href="#destinations">Destinations</a></li>
                 <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-
             </ul>
+            <a href="#contact" class="nav-cta">Plan your trip</a>
         </nav>
     </header>
 
     <main>
         <section id="hero" class="hero">
-        <h1>Welcome to <span>Travel Agency</span></h1>
-        <p>Your journey starts here!</p>
-        <a href="#destinations" class="btn">Explore Destinations</a>
+            <div class="hero-content">
+                <p class="eyebrow">Thoughtful journeys, unforgettable places</p>
+                <h1>Go somewhere <span>that stays with you.</span></h1>
+                <p class="hero-copy">From iconic city streets to hidden-away favourites, we make it easier to plan a trip that feels like yours.</p>
+                <a href="#destinations" class="button button-light">Explore our trips</a>
+            </div>
+            <a class="hero-scroll" href="#destinations">Discover our destinations <span aria-hidden="true">&darr;</span></a>
         </section>
 
-        <section id="destinations" class="destinations">
-            <h2>Popular Destinations</h2>
+        <section id="destinations" class="section destinations">
+            <div class="section-heading">
+                <p class="eyebrow">Find your next escape</p>
+                <h2>Trips worth looking forward to</h2>
+                <p>Carefully planned experiences in places we can't wait to share with you.</p>
+            </div>
             <div class="destination-grid">
                 <article class="destination-card">
                     <img src="Images/Destinations/pexels-kokorevas-29731407.jpg" alt="Paris" class="destination-image">
-                    <h3>Paris</h3>
-                    <p>The city of lights and love.</p>
+                    <div class="destination-content">
+                        <p class="card-kicker">France · City escape</p>
+                        <h3>Paris, at your pace</h3>
+                        <p>Spend your days wandering charming streets, lingering over good food, and seeing the city like a local.</p>
+                        <ul class="package-details" aria-label="Paris package details">
+                            <li><span>Duration</span><strong>5 days</strong></li>
+                            <li><span>From</span><strong>$1,290</strong></li>
+                        </ul>
+                        <a href="#contact" class="text-link">Plan this trip <span aria-hidden="true">&rarr;</span></a>
+                    </div>
                 </article>
                 <article class="destination-card">
-                    <img src="Images/Destinations/pexels-k-zhao-44056406-39978661.jpg" alt="Tokyo"class="destination-image">
-                    <h3>Tokyo</h3>
-                    <p>A blend of tradition and modernity.</p>
+                    <img src="Images/Destinations/pexels-k-zhao-44056406-39978661.jpg" alt="Tokyo" class="destination-image">
+                    <div class="destination-content">
+                        <p class="card-kicker">Japan · Culture &amp; cuisine</p>
+                        <h3>Tokyo, old meets new</h3>
+                        <p>Discover quiet temple gardens, late-night ramen spots, and the energy of a city unlike any other.</p>
+                        <ul class="package-details" aria-label="Tokyo package details">
+                            <li><span>Duration</span><strong>8 days</strong></li>
+                            <li><span>From</span><strong>$2,450</strong></li>
+                        </ul>
+                        <a href="#contact" class="text-link">Plan this trip <span aria-hidden="true">&rarr;</span></a>
+                    </div>
                 </article>
                 <article class="destination-card">
                     <img src="Images/Destinations/pexels-andresdazaph-29476040.jpg" alt="New York" class="destination-image">
-                    <h3>New York</h3>
-                    <p>The city that never sleeps.</p>
+                    <div class="destination-content">
+                        <p class="card-kicker">United States · City break</p>
+                        <h3>New York, full of life</h3>
+                        <p>Take in skyline views, neighbourhood favourites, and all the little moments between the landmarks.</p>
+                        <ul class="package-details" aria-label="New York package details">
+                            <li><span>Duration</span><strong>6 days</strong></li>
+                            <li><span>From</span><strong>$1,780</strong></li>
+                        </ul>
+                        <a href="#contact" class="text-link">Plan this trip <span aria-hidden="true">&rarr;</span></a>
+                    </div>
                 </article>
             </div>
         </section>
 
-        <section id="about" class="about">
-            <h2>About Us</h2>
-            <p>We are a travel agency dedicated to providing unforgettable experiences. Our team of experts will help you plan your perfect trip, whether it's a relaxing beach vacation or an adventurous mountain trek.</p>
+        <section class="section testimonials" aria-labelledby="testimonials-heading">
+            <div class="section-heading">
+                <p class="eyebrow">A few kind words</p>
+                <h2 id="testimonials-heading">Good trips make good stories</h2>
+            </div>
+            <div class="testimonial-grid">
+                <figure class="testimonial-card">
+                    <blockquote>“Every detail felt considered, but we still had the freedom to explore. It was exactly the kind of trip we needed.”</blockquote>
+                    <figcaption><strong>Amelia R.</strong><span>Paris city escape</span></figcaption>
+                </figure>
+                <figure class="testimonial-card">
+                    <blockquote>“Tokyo felt so much more approachable with a thoughtful plan behind us. We came home already talking about going back.”</blockquote>
+                    <figcaption><strong>Daniel &amp; Priya</strong><span>Japan discovery trip</span></figcaption>
+                </figure>
+                <figure class="testimonial-card">
+                    <blockquote>“The perfect balance of seeing the highlights and finding our own favourite corners. Planning was refreshingly easy.”</blockquote>
+                    <figcaption><strong>Marcus L.</strong><span>New York city break</span></figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section id="about" class="section about">
+            <div class="about-copy">
+                <p class="eyebrow">A little about us</p>
+                <h2>Travel should feel like it was made for you.</h2>
+                <p>We believe the best journeys leave room for the unexpected. Our team brings local insight and thoughtful planning together, so you can spend less time sorting details and more time enjoying the place you're in.</p>
+                <a href="#contact" class="text-link">Let's start planning <span aria-hidden="true">&rarr;</span></a>
+            </div>
+            <div class="about-note">
+                <span class="about-mark" aria-hidden="true">T</span>
+                <p>Considered itineraries. Personal recommendations. More time for the moments that matter.</p>
+            </div>
+        </section>
+
+        <section id="contact" class="trip-cta">
+            <p class="eyebrow">Your next chapter is out there</p>
+            <h2>Shall we plan something wonderful?</h2>
+            <p>Tell us what you're dreaming of, and we'll help you find your way there.</p>
+            <a href="mailto:info@travelagency.com" class="button button-light">Plan your trip</a>
         </section>
     </main>
 
-    <footer id="contact">
+    <footer class="site-footer">
         <div class="footer-grid">
-
             <div class="footer-brand">
-                <p class="footer-logo">Travel<span>Agency</span></p>
-                <p>Your journey starts here!</p>
+                <a href="#hero" class="logo">Travel<span>Agency</span></a>
+                <p>Thoughtful journeys, unforgettable places.</p>
             </div>
             <div class="footer-links">
-                <h3>Quick Links</h3>
-                <ul class="footer-nav">
+                <h2>Explore</h2>
+                <ul>
                     <li><a href="#hero">Home</a></li>
                     <li><a href="#destinations">Destinations</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#about">About us</a></li>
                 </ul>
             </div>
-
             <div class="footer-contact">
-                <h3>Contact Us</h3>
-                <p>Email: info@travelagency.com</p>
-                <p>Phone: +1 (123) 456-7890</p>
-                <p>Address: 123 Travel St, Adventure City, Country</p>
+                <h2>Get in touch</h2>
+                <a href="mailto:info@travelagency.com">info@travelagency.com</a>
+                <a href="tel:+11234567890">+1 (123) 456-7890</a>
+                <p>123 Travel St, Adventure City</p>
             </div>
-
         </div>
-
         <p class="copyright">&copy; 2026 Travel Agency. All rights reserved.</p>
     </footer>
 </body>
