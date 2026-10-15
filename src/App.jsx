@@ -8,7 +8,7 @@ import Footer from './components/Footer.jsx'
 
 function App() {
   return (
-    <div>
+    <div className="min-h-screen overflow-x-clip">
       <Header />
       <main>
         <Hero />
