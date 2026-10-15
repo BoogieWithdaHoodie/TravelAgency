@@ -1,13 +1,24 @@
-import { useState } from 'react'
-
+import Header from './components/Header.jsx'
+import Hero from './components/Hero.jsx'
+import Destinations from './components/Destinations.jsx'
+import Testimonials from './components/Testimonials.jsx'
+import About from './components/About.jsx'
+import TripCTA from './components/TripCTA.jsx'
+import Footer from './components/Footer.jsx'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-   <h1 className="text-4xl font-bold text-amber-500 text-center mt-20">
-      Tailwind is working
-    </h1>
+    <div>
+      <Header />
+      <main>
+        <Hero />
+        <Destinations />
+        <Testimonials />
+        <About />
+        <TripCTA />
+      </main>
+      <Footer />
+    </div>
   )
 }
 
