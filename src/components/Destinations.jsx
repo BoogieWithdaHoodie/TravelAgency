@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import destinations from '../Data/destinations.js'
+import SaveTripToggle from './SaveTripToggle.jsx'
 
 function Destinations() {
   const [search, setSearch] = useState('')
@@ -35,12 +36,14 @@ function Destinations() {
     return matches
   }, [category, savedIds, savedOnly, search, sortBy])
 
-  function toggleSaved(id) {
-    setSavedIds((currentIds) => (
-      currentIds.includes(id)
-        ? currentIds.filter((savedId) => savedId !== id)
-        : [...currentIds, id]
-    ))
+  function setDestinationSaved(id, shouldSave) {
+    setSavedIds((currentIds) => {
+      if (shouldSave) {
+        return currentIds.includes(id) ? currentIds : [...currentIds, id]
+      }
+
+      return currentIds.filter((savedId) => savedId !== id)
+    })
   }
 
   return (
@@ -99,15 +102,13 @@ function Destinations() {
                 alt={destination.name}
                 className="destination-image"
               />
-              <button
-                className={`save-trip${savedIds.includes(destination.id) ? ' is-saved' : ''}`}
-                type="button"
-                aria-pressed={savedIds.includes(destination.id)}
-                aria-label={`${savedIds.includes(destination.id) ? 'Remove' : 'Save'} ${destination.name} ${savedIds.includes(destination.id) ? 'from' : 'to'} saved trips`}
-                onClick={() => toggleSaved(destination.id)}
-              >
-                {savedIds.includes(destination.id) ? '♥ Saved' : '♡ Save trip'}
-              </button>
+              <SaveTripToggle
+                checked={savedIds.includes(destination.id)}
+                destinationName={destination.name}
+                onChange={(shouldSave) =>
+                  setDestinationSaved(destination.id, shouldSave)
+                }
+              />
             </div>
             <div className="destination-content">
               <p className="card-kicker">
