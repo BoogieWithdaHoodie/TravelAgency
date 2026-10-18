@@ -6,6 +6,7 @@ import About from './components/About.jsx'
 import TripCTA from './components/TripCTA.jsx'
 import Footer from './components/Footer.jsx'
 
+// Compose the page from its independent, reusable sections.
 function App() {
   return (
     <div className="min-h-screen overflow-x-clip">

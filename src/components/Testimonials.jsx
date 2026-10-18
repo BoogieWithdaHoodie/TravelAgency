@@ -1,3 +1,4 @@
+// Display traveler quotes from a local array using one shared card layout.
 const testimonials = [
   {
     quote:

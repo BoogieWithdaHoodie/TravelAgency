@@ -1,3 +1,4 @@
+// Hardcoded trip catalog used to render and filter destination cards.
 const destinations = [
   {
     id: 'paris',

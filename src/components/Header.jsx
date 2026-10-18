@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+// Responsive site navigation; React state controls the small-screen menu.
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -12,9 +13,9 @@ function Header() {
         <a
           href="#hero"
           className="shrink-0 text-xl font-extrabold tracking-[-0.06em] text-travel-primary sm:text-[1.35rem]"
-          aria-label="Travel Agency home"
+          aria-label="Meridian Journeys home"
         >
-          Travel<span>Agency</span>
+          Meridian<span> Journeys</span>
         </a>
         <button
           className="ml-auto inline-flex min-h-10 items-center justify-center rounded border border-travel-border px-3 font-semibold text-travel-primary transition-colors hover:bg-travel-accent-light focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent md:hidden"

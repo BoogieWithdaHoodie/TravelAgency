@@ -1,3 +1,4 @@
+// Controlled button: its parent provides the saved value and handles changes.
 function SaveTripToggle({ checked, destinationName, onChange }) {
   return (
     <button

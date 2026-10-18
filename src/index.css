@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Shared brand palette used by Tailwind utility classes throughout the page. */
 @theme {
   --color-travel-ink: #183331;
   --color-travel-muted: #63716d;
@@ -14,6 +15,7 @@
 }
 
 @layer base {
+  /* Keep anchor navigation usable beneath the sticky header and avoid page overflow. */
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;

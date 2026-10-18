@@ -1,3 +1,4 @@
+// Introduce the travel brand with the hero image and primary page links.
 function Hero() {
   return (
     <section
@@ -27,7 +28,7 @@ function Hero() {
             href="#destinations"
             className="inline-flex min-h-12 items-center justify-center rounded-sm bg-travel-accent px-6 py-3 text-sm font-bold text-[#1f2926] transition duration-200 hover:-translate-y-0.5 hover:bg-[#e6c37e] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
           >
-          Explore our trips
+            Explore our trips
           </a>
         </div>
       </div>

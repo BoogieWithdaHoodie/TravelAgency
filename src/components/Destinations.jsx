@@ -2,23 +2,29 @@ import { useEffect, useMemo, useState } from 'react'
 import destinations from '../Data/destinations.js'
 import SaveTripToggle from './SaveTripToggle.jsx'
 
+// Search, filter, sort, and save the hardcoded destination records.
 function Destinations() {
+  // Keep each control's current value in React so the list updates immediately.
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('all')
   const [sortBy, setSortBy] = useState('featured')
   const [savedOnly, setSavedOnly] = useState(false)
+  // Initialize saved trips from this browser, then persist changes below.
   const [savedIds, setSavedIds] = useState(() => {
     const storedIds = JSON.parse(localStorage.getItem('savedDestinations') ?? '[]')
     return Array.isArray(storedIds)
       ? storedIds.filter((id) => typeof id === 'string')
       : []
   })
+  // Build filter choices from the data, so new categories appear automatically.
   const categories = [...new Set(destinations.map((destination) => destination.category))]
 
+  // Keep browser storage in sync after the saved-ID state changes.
   useEffect(() => {
     localStorage.setItem('savedDestinations', JSON.stringify(savedIds))
   }, [savedIds])
 
+  // Compute visible trips from the current controls instead of storing duplicate list state.
   const filteredDestinations = useMemo(() => {
     const query = search.trim().toLowerCase()
     const matches = destinations.filter((destination) => {
@@ -37,6 +43,7 @@ function Destinations() {
   }, [category, savedIds, savedOnly, search, sortBy])
 
   function setDestinationSaved(id, shouldSave) {
+    // Use the latest array to avoid losing updates when toggling cards quickly.
     setSavedIds((currentIds) => {
       if (shouldSave) {
         return currentIds.includes(id) ? currentIds : [...currentIds, id]
@@ -128,6 +135,7 @@ function Destinations() {
                 alt={destination.name}
                 className="aspect-[16/10] w-full object-cover sm:aspect-[4/3]"
               />
+              {/* The parent owns saved state; each button receives its value and callback. */}
               <SaveTripToggle
                 checked={savedIds.includes(destination.id)}
                 destinationName={destination.name}

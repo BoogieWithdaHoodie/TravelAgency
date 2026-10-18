@@ -1,3 +1,4 @@
+// Provide a final contact action for visitors ready to plan a trip.
 function TripCTA() {
   return (
     <section id="contact" className="bg-travel-primary px-4 py-16 text-center text-white sm:px-6 sm:py-20">

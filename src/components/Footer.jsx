@@ -1,3 +1,4 @@
+// Site-wide footer with navigation and the agency's existing contact details.
 function Footer() {
   return (
     <footer className="bg-travel-primary-dark px-4 pb-6 pt-12 text-white sm:px-6 sm:pt-14">
@@ -7,7 +8,7 @@ function Footer() {
             href="#hero"
             className="text-xl font-extrabold tracking-[-0.06em] text-white"
           >
-            Travel<span>Agency</span>
+            Meridian<span> Journeys</span>
           </a>
           <p className="mt-3 text-sm text-white/75">
             Thoughtful journeys, unforgettable places.
@@ -33,7 +34,7 @@ function Footer() {
         </div>
       </div>
       <p className="mx-auto mt-8 w-full max-w-6xl border-t border-white/20 pt-5 text-xs text-white/60">
-        &copy; 2026 Travel Agency. All rights reserved.
+        &copy; 2026 Meridian Journeys. All rights reserved.
       </p>
     </footer>
   )
