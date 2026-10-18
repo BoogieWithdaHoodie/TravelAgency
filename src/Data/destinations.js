@@ -33,6 +33,39 @@ const destinations = [
       'Take in skyline views, neighbourhood favourites, and all the little moments between the landmarks.',
     image: '/images/destinations/pexels-andresdazaph-29476040.jpg',
   },
+  {
+    id: 'jakarta',
+    name: 'Jakarta at golden hour',
+    country: 'Indonesia',
+    category: 'City escape',
+    price: 1650,
+    duration: 6,
+    description:
+      'Take in a vibrant city skyline, lively neighbourhoods, and Indonesia’s rich food and culture.',
+    image: '/images/destinations/Indonesia.jpg',
+  },
+  {
+    id: 'rio-de-janeiro',
+    name: 'Rio, from sea to summit',
+    country: 'Brazil',
+    category: 'Coastal adventure',
+    price: 2190,
+    duration: 7,
+    description:
+      'Pair sweeping bay views with golden beaches, mountain scenery, and the energy of Rio.',
+    image: '/images/destinations/rio.jpg',
+  },
+  {
+    id: 'sydney',
+    name: 'Sydney by the harbour',
+    country: 'Australia',
+    category: 'Harbour escape',
+    price: 2750,
+    duration: 8,
+    description:
+      'Explore the harbour, admire the Opera House, and enjoy a relaxed coastal city break.',
+    image: '/images/destinations/sidney.jpg',
+  },
 ]
 
 export default destinations
