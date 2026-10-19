@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import destinations from '../Data/destinations.js'
 import SaveTripToggle from './SaveTripToggle.jsx'
 
@@ -24,23 +24,25 @@ function Destinations() {
     localStorage.setItem('savedDestinations', JSON.stringify(savedIds))
   }, [savedIds])
 
-  // Compute visible trips from the current controls instead of storing duplicate list state.
-  const filteredDestinations = useMemo(() => {
-    const query = search.trim().toLowerCase()
-    const matches = destinations.filter((destination) => {
-      const matchesSearch = [destination.name, destination.country, destination.category]
-        .some((value) => value.toLowerCase().includes(query))
+  // Recalculate the visible trips from the current search and filter choices.
+  const query = search.trim().toLowerCase()
+  const matchingDestinations = destinations.filter((destination) => {
+    const matchesSearch = [destination.name, destination.country, destination.category]
+      .some((value) => value.toLowerCase().includes(query))
 
-      return matchesSearch
-        && (category === 'all' || destination.category === category)
-        && (!savedOnly || savedIds.includes(destination.id))
-    })
+    return matchesSearch
+      && (category === 'all' || destination.category === category)
+      && (!savedOnly || savedIds.includes(destination.id))
+  })
 
-    if (sortBy === 'price-low') return matches.sort((a, b) => a.price - b.price)
-    if (sortBy === 'price-high') return matches.sort((a, b) => b.price - a.price)
-    if (sortBy === 'duration') return matches.sort((a, b) => a.duration - b.duration)
-    return matches
-  }, [category, savedIds, savedOnly, search, sortBy])
+  const filteredDestinations = [...matchingDestinations]
+  if (sortBy === 'price-low') {
+    filteredDestinations.sort((a, b) => a.price - b.price)
+  } else if (sortBy === 'price-high') {
+    filteredDestinations.sort((a, b) => b.price - a.price)
+  } else if (sortBy === 'duration') {
+    filteredDestinations.sort((a, b) => a.duration - b.duration)
+  }
 
   function setDestinationSaved(id, shouldSave) {
     // Use the latest array to avoid losing updates when toggling cards quickly.
