@@ -59,7 +59,7 @@ function Header() {
           {!isPending && (isSignedIn ? (
             <li>
               <button
-                className="font-semibold text-travel-primary transition-colors hover:text-travel-accent"
+                className="inline-flex min-h-10 items-center justify-center rounded-sm border border-travel-primary px-4 py-2 font-semibold text-travel-primary transition-colors hover:bg-travel-primary hover:text-white focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
                 type="button"
                 onClick={handleSignOut}
               >
@@ -70,7 +70,7 @@ function Header() {
             <>
               <li>
                 <Link
-                  className="transition-colors hover:text-travel-accent"
+                  className="inline-flex min-h-10 items-center justify-center rounded-sm border border-travel-primary px-4 py-2 font-semibold text-travel-primary transition-colors hover:bg-travel-primary hover:text-white focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
                   to="/login"
                   onClick={() => setMenuOpen(false)}
                 >
@@ -79,7 +79,7 @@ function Header() {
               </li>
               <li>
                 <Link
-                  className="font-semibold text-travel-primary transition-colors hover:text-travel-accent"
+                  className="inline-flex min-h-10 items-center justify-center rounded-sm bg-travel-accent px-4 py-2 font-bold text-[#1f2926] transition-colors hover:bg-[#e6c37e] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
                   to="/login?mode=signup"
                   onClick={() => setMenuOpen(false)}
                 >
