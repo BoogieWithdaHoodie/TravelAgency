@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api",
+      "destination": "https://travelagency-u3vt.onrender.com/api"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://travelagency-u3vt.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
