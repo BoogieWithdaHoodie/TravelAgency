@@ -1,8 +1,31 @@
 import { useState } from 'react'
+import { Link, useNavigate } from 'react-router'
+import { signOut, useSession } from '../lib/auth-client.js'
 
 // Responsive site navigation; React state controls the small-screen menu.
 function Header() {
+  const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [authError, setAuthError] = useState('')
+  const { data: session, isPending } = useSession()
+  const isSignedIn = Boolean(session?.user)
+
+  async function handleSignOut() {
+    setAuthError('')
+
+    try {
+      const result = await signOut()
+      if (result.error) {
+        setAuthError(result.error.message || 'Could not sign out. Please try again.')
+        return
+      }
+
+      setMenuOpen(false)
+      navigate('/')
+    } catch {
+      setAuthError('Could not reach the sign-out service. Please try again.')
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-travel-border bg-travel-background">
@@ -33,6 +56,38 @@ function Header() {
           <li><a className="transition-colors hover:text-travel-accent" href="#hero" onClick={() => setMenuOpen(false)}>Home</a></li>
           <li><a className="transition-colors hover:text-travel-accent" href="#destinations" onClick={() => setMenuOpen(false)}>Destinations</a></li>
           <li><a className="transition-colors hover:text-travel-accent" href="#about" onClick={() => setMenuOpen(false)}>About</a></li>
+          {!isPending && (isSignedIn ? (
+            <li>
+              <button
+                className="font-semibold text-travel-primary transition-colors hover:text-travel-accent"
+                type="button"
+                onClick={handleSignOut}
+              >
+                Sign out
+              </button>
+            </li>
+          ) : (
+            <>
+              <li>
+                <Link
+                  className="transition-colors hover:text-travel-accent"
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Sign in
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="font-semibold text-travel-primary transition-colors hover:text-travel-accent"
+                  to="/login?mode=signup"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Sign up
+                </Link>
+              </li>
+            </>
+          ))}
           <li className="md:hidden">
             <a className="font-semibold text-travel-primary" href="#contact" onClick={() => setMenuOpen(false)}>
               Plan your trip
@@ -47,6 +102,11 @@ function Header() {
           Plan your trip
         </a>
       </nav>
+      {authError && (
+        <p className="mx-auto max-w-6xl px-4 pb-3 text-sm text-red-800" role="alert">
+          {authError}
+        </p>
+      )}
     </header>
   )
 }

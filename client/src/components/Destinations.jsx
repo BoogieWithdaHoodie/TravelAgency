@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react'
-import destinations from '../Data/destinations.js'
+import { formatPrice } from '../lib/format.js'
 import SaveTripToggle from './SaveTripToggle.jsx'
 
-// Search, filter, sort, and save the hardcoded destination records.
+// Fetch, search, filter, sort, and save destinations provided by the API.
 function Destinations() {
+  const [destinations, setDestinations] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+  const [reloadKey, setReloadKey] = useState(0)
+
   // Keep each control's current value in React so the list updates immediately.
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('all')
@@ -16,6 +21,46 @@ function Destinations() {
       ? storedIds.filter((id) => typeof id === 'string')
       : []
   })
+
+  // Load destination records from the Express API, not the old client-side data file.
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function loadDestinations() {
+      setIsLoading(true)
+      setLoadError('')
+
+      try {
+        const response = await fetch('/api/destinations', {
+          signal: controller.signal,
+        })
+
+        if (!response.ok) {
+          throw new Error(`The destinations request failed (${response.status}).`)
+        }
+
+        const data = await response.json()
+        if (!Array.isArray(data)) {
+          throw new Error('The destinations API returned an unexpected response.')
+        }
+
+        setDestinations(data)
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setLoadError(error.message || 'Could not load destinations.')
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadDestinations()
+
+    return () => controller.abort()
+  }, [reloadKey])
+
   // Build filter choices from the data, so new categories appear automatically.
   const categories = [...new Set(destinations.map((destination) => destination.category))]
 
@@ -122,68 +167,89 @@ function Destinations() {
           Saved trips ({savedIds.length})
         </label>
       </div>
-      <p className="mb-4 text-sm text-travel-muted" aria-live="polite">
-        Showing {filteredDestinations.length} of {destinations.length} trips
-      </p>
-      <div className="grid min-w-0 grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredDestinations.map((destination) => (
-          <article
-            className="flex min-w-0 flex-col overflow-hidden border border-travel-border bg-travel-surface transition duration-200 hover:-translate-y-1 hover:shadow-[0_14px_32px_rgb(24_51_49_/_10%)]"
-            key={destination.id}
+      {isLoading && (
+        <p className="py-8 text-center text-travel-muted" role="status">
+          Loading destinations...
+        </p>
+      )}
+      {!isLoading && loadError && (
+        <div className="bg-travel-surface p-6 text-center" role="alert">
+          <p className="text-travel-ink">{loadError}</p>
+          <button
+            className="mt-4 rounded-sm bg-travel-primary px-4 py-2 font-semibold text-white hover:bg-travel-primary-dark"
+            type="button"
+            onClick={() => setReloadKey((key) => key + 1)}
           >
-            <div className="relative">
-              <img
-                src={destination.image}
-                alt={destination.name}
-                className="aspect-[16/10] w-full object-cover sm:aspect-[4/3]"
-              />
-              {/* The parent owns saved state; each button receives its value and callback. */}
-              <SaveTripToggle
-                checked={savedIds.includes(destination.id)}
-                destinationName={destination.name}
-                onChange={(shouldSave) =>
-                  setDestinationSaved(destination.id, shouldSave)
-                }
-              />
-            </div>
-            <div className="flex flex-1 min-w-0 flex-col items-start p-5 sm:p-6">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-travel-muted">
-                {destination.country} · {destination.category}
-              </p>
-              <h3 className="text-2xl font-semibold leading-tight tracking-[-0.035em] text-travel-ink">
-                {destination.name}
-              </h3>
-              <p className="mb-5 mt-3 text-sm text-travel-muted">
-                {destination.description}
-              </p>
-              <ul
-                className="mt-auto flex w-full justify-between gap-4 border-y border-travel-border py-4"
-                aria-label={`${destination.name} package details`}
+            Try again
+          </button>
+        </div>
+      )}
+      {!isLoading && !loadError && (
+        <>
+          <p className="mb-4 text-sm text-travel-muted" aria-live="polite">
+            Showing {filteredDestinations.length} of {destinations.length} trips
+          </p>
+          <div className="grid min-w-0 grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredDestinations.map((destination) => (
+              <article
+                className="flex min-w-0 flex-col overflow-hidden border border-travel-border bg-travel-surface transition duration-200 hover:-translate-y-1 hover:shadow-[0_14px_32px_rgb(24_51_49_/_10%)]"
+                key={destination.id}
               >
-                <li className="grid gap-1">
-                  <span className="text-xs text-travel-muted">Duration</span>
-                  <strong className="text-base font-semibold text-travel-ink">
-                    {destination.duration} days
-                  </strong>
-                </li>
-                <li className="grid gap-1 text-right">
-                  <span className="text-xs text-travel-muted">From</span>
-                  <strong className="text-base font-semibold text-travel-ink">
-                    ${destination.price.toLocaleString('en-US')}
-                  </strong>
-                </li>
-              </ul>
-              <a
-                href="#contact"
-                className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-travel-primary transition-colors hover:text-travel-accent focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
-              >
-                Plan this trip <span aria-hidden="true">&rarr;</span>
-              </a>
-            </div>
-          </article>
-        ))}
-      </div>
-      {filteredDestinations.length === 0 && (
+                <div className="relative">
+                  <img
+                    src={destination.image}
+                    alt={destination.name}
+                    className="aspect-[16/10] w-full object-cover sm:aspect-[4/3]"
+                  />
+                  {/* The parent owns saved state; each button receives its value and callback. */}
+                  <SaveTripToggle
+                    checked={savedIds.includes(destination.id)}
+                    destinationName={destination.name}
+                    onChange={(shouldSave) =>
+                      setDestinationSaved(destination.id, shouldSave)
+                    }
+                  />
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col items-start p-5 sm:p-6">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-travel-muted">
+                    {destination.country} · {destination.category}
+                  </p>
+                  <h3 className="text-2xl font-semibold leading-tight tracking-[-0.035em] text-travel-ink">
+                    {destination.name}
+                  </h3>
+                  <p className="mb-5 mt-3 text-sm text-travel-muted">
+                    {destination.description}
+                  </p>
+                  <ul
+                    className="mt-auto flex w-full justify-between gap-4 border-y border-travel-border py-4"
+                    aria-label={`${destination.name} package details`}
+                  >
+                    <li className="grid gap-1">
+                      <span className="text-xs text-travel-muted">Duration</span>
+                      <strong className="text-base font-semibold text-travel-ink">
+                        {destination.duration} days
+                      </strong>
+                    </li>
+                    <li className="grid gap-1 text-right">
+                      <span className="text-xs text-travel-muted">From</span>
+                      <strong className="text-base font-semibold text-travel-ink">
+                        {formatPrice(destination.price)}
+                      </strong>
+                    </li>
+                  </ul>
+                  <a
+                    href="#contact"
+                    className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-travel-primary transition-colors hover:text-travel-accent focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
+                  >
+                    Plan this trip <span aria-hidden="true">&rarr;</span>
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
+      )}
+      {!isLoading && !loadError && filteredDestinations.length === 0 && (
         <p
           className="mt-4 bg-travel-surface p-8 text-center text-travel-muted"
           role="status"
