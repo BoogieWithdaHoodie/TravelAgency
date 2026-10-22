@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router'
+import { useSession } from '../lib/auth-client.js'
 import { formatPrice } from '../lib/format.js'
 import SaveTripToggle from './SaveTripToggle.jsx'
 
-// Fetch, search, filter, sort, and save destinations provided by the API.
+// Fetch, search, filter, sort, and save API-provided destinations.
 function Destinations() {
+  const { data: session, isPending: isSessionPending } = useSession()
+  const userId = session?.user?.id
+  const isSignedIn = Boolean(userId)
   const [destinations, setDestinations] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
@@ -14,13 +19,15 @@ function Destinations() {
   const [category, setCategory] = useState('all')
   const [sortBy, setSortBy] = useState('featured')
   const [savedOnly, setSavedOnly] = useState(false)
-  // Initialize saved trips from this browser, then persist changes below.
-  const [savedIds, setSavedIds] = useState(() => {
-    const storedIds = JSON.parse(localStorage.getItem('savedDestinations') ?? '[]')
-    return Array.isArray(storedIds)
-      ? storedIds.filter((id) => typeof id === 'string')
-      : []
-  })
+  const [savedIds, setSavedIds] = useState([])
+  const [savedOwnerId, setSavedOwnerId] = useState(null)
+  const [isSavedLoading, setIsSavedLoading] = useState(false)
+  const [savedError, setSavedError] = useState('')
+  const [savedReloadKey, setSavedReloadKey] = useState(0)
+  const [savingIds, setSavingIds] = useState(() => new Set())
+  const accountSavedIds = !isSessionPending && isSignedIn && savedOwnerId === userId
+    ? savedIds
+    : []
 
   // Load destination records from the Express API, not the old client-side data file.
   useEffect(() => {
@@ -61,13 +68,68 @@ function Destinations() {
     return () => controller.abort()
   }, [reloadKey])
 
+  // Load saved destination IDs for the signed-in account only.
+  useEffect(() => {
+    if (isSessionPending) {
+      return undefined
+    }
+
+    if (!userId) {
+      return undefined
+    }
+
+    const controller = new AbortController()
+
+    async function loadSavedDestinations() {
+      setSavedIds([])
+      setSavedOwnerId(null)
+      setSavedError('')
+      setIsSavedLoading(true)
+
+      try {
+        const response = await fetch('/api/saved-destinations', {
+          credentials: 'include',
+          signal: controller.signal,
+        })
+
+        if (!response.ok) {
+          throw new Error(`Saved trips could not be loaded (${response.status}).`)
+        }
+
+        const data = await response.json()
+        if (!Array.isArray(data) || data.some((id) => typeof id !== 'string')) {
+          throw new Error('The saved trips API returned an unexpected response.')
+        }
+
+        if (controller.signal.aborted) {
+          return
+        }
+
+        setSavedIds(data)
+        setSavedOwnerId(userId)
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setSavedError(error.message || 'Could not load saved trips.')
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsSavedLoading(false)
+        }
+      }
+    }
+
+    loadSavedDestinations()
+
+    return () => controller.abort()
+  }, [isSessionPending, savedReloadKey, userId])
+
+  // Remove legacy browser-saved trips so they cannot be mistaken for account data.
+  useEffect(() => {
+    localStorage.removeItem('savedDestinations')
+  }, [])
+
   // Build filter choices from the data, so new categories appear automatically.
   const categories = [...new Set(destinations.map((destination) => destination.category))]
-
-  // Keep browser storage in sync after the saved-ID state changes.
-  useEffect(() => {
-    localStorage.setItem('savedDestinations', JSON.stringify(savedIds))
-  }, [savedIds])
 
   // Recalculate the visible trips from the current search and filter choices.
   const query = search.trim().toLowerCase()
@@ -77,7 +139,7 @@ function Destinations() {
 
     return matchesSearch
       && (category === 'all' || destination.category === category)
-      && (!savedOnly || savedIds.includes(destination.id))
+      && (!(isSignedIn && savedOnly) || accountSavedIds.includes(destination.id))
   })
 
   const filteredDestinations = [...matchingDestinations]
@@ -89,15 +151,41 @@ function Destinations() {
     filteredDestinations.sort((a, b) => a.duration - b.duration)
   }
 
-  function setDestinationSaved(id, shouldSave) {
-    // Use the latest array to avoid losing updates when toggling cards quickly.
-    setSavedIds((currentIds) => {
-      if (shouldSave) {
-        return currentIds.includes(id) ? currentIds : [...currentIds, id]
+  async function setDestinationSaved(id, shouldSave) {
+    setSavedError('')
+    setSavingIds((currentIds) => new Set(currentIds).add(id))
+
+    try {
+      const response = await fetch(
+        shouldSave
+          ? '/api/saved-destinations'
+          : `/api/saved-destinations/${encodeURIComponent(id)}`,
+        {
+          method: shouldSave ? 'POST' : 'DELETE',
+          credentials: 'include',
+          headers: shouldSave ? { 'Content-Type': 'application/json' } : undefined,
+          body: shouldSave ? JSON.stringify({ destinationId: id }) : undefined,
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error(`Could not update saved trips (${response.status}).`)
       }
 
-      return currentIds.filter((savedId) => savedId !== id)
-    })
+      setSavedIds((currentIds) => (
+        shouldSave
+          ? currentIds.includes(id) ? currentIds : [...currentIds, id]
+          : currentIds.filter((savedId) => savedId !== id)
+      ))
+    } catch (error) {
+      setSavedError(error.message || 'Could not update saved trips.')
+    } finally {
+      setSavingIds((currentIds) => {
+        const nextIds = new Set(currentIds)
+        nextIds.delete(id)
+        return nextIds
+      })
+    }
   }
 
   return (
@@ -157,16 +245,39 @@ function Destinations() {
             <option value="duration">Shortest trip</option>
           </select>
         </label>
-        <label className="flex min-h-11 items-center gap-2 whitespace-nowrap text-sm font-semibold text-travel-muted">
-          <input
-            type="checkbox"
-            checked={savedOnly}
-            onChange={(event) => setSavedOnly(event.target.checked)}
-            className="size-4 accent-travel-primary focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
-          />
-          Saved trips ({savedIds.length})
-        </label>
+        {isSignedIn ? (
+          <label className="flex min-h-11 items-center gap-2 whitespace-nowrap text-sm font-semibold text-travel-muted">
+            <input
+              type="checkbox"
+              checked={savedOnly}
+              disabled={isSavedLoading}
+              onChange={(event) => setSavedOnly(event.target.checked)}
+              className="size-4 accent-travel-primary focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
+            />
+            Saved trips ({accountSavedIds.length})
+          </label>
+        ) : (
+          <p className="flex min-h-11 items-center text-sm font-semibold text-travel-muted">
+            {isSessionPending ? 'Checking account...' : (
+              <Link className="text-travel-primary hover:text-travel-accent" to="/login">
+                Sign in to save trips
+              </Link>
+            )}
+          </p>
+        )}
       </div>
+      {isSignedIn && savedError && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-sm border border-red-200 bg-red-50 p-4 text-sm text-red-800" role="alert">
+          <p>{savedError}</p>
+          <button
+            className="font-semibold underline"
+            type="button"
+            onClick={() => setSavedReloadKey((key) => key + 1)}
+          >
+            Reload saved trips
+          </button>
+        </div>
+      )}
       {isLoading && (
         <p className="py-8 text-center text-travel-muted" role="status">
           Loading destinations...
@@ -202,13 +313,16 @@ function Destinations() {
                     className="aspect-[16/10] w-full object-cover sm:aspect-[4/3]"
                   />
                   {/* The parent owns saved state; each button receives its value and callback. */}
-                  <SaveTripToggle
-                    checked={savedIds.includes(destination.id)}
-                    destinationName={destination.name}
-                    onChange={(shouldSave) =>
-                      setDestinationSaved(destination.id, shouldSave)
-                    }
-                  />
+                  {isSignedIn && (
+                    <SaveTripToggle
+                      checked={accountSavedIds.includes(destination.id)}
+                      destinationName={destination.name}
+                      disabled={isSavedLoading || savingIds.has(destination.id)}
+                      onChange={(shouldSave) =>
+                        setDestinationSaved(destination.id, shouldSave)
+                      }
+                    />
+                  )}
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col items-start p-5 sm:p-6">
                   <p className="mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-travel-muted">
