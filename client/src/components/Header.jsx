@@ -2,6 +2,30 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { signOut, useSession } from '../lib/auth-client.js'
 
+function UserIdentity({ name }) {
+  return (
+    <span className="inline-flex min-w-0 items-center gap-2.5 rounded-full border border-travel-border bg-white px-3 py-1.5 text-sm font-semibold text-travel-primary-dark shadow-sm">
+      <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-travel-accent-light text-travel-primary">
+        <svg
+          aria-hidden="true"
+          className="size-4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+      <span className="max-w-[min(12rem,60vw)] truncate">{name}</span>
+    </span>
+  )
+}
+
 // Responsive site navigation; React state controls the small-screen menu.
 function Header() {
   const navigate = useNavigate()
@@ -9,6 +33,7 @@ function Header() {
   const [authError, setAuthError] = useState('')
   const { data: session, isPending } = useSession()
   const isSignedIn = Boolean(session?.user)
+  const accountName = session?.user?.name || session?.user?.email || 'Traveler'
 
   async function handleSignOut() {
     setAuthError('')
@@ -30,7 +55,7 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-travel-border bg-travel-background">
       <nav
-        className="mx-auto flex min-h-16 w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 px-4 py-3 sm:px-6 md:flex-nowrap md:gap-8 md:py-0"
+        className="mx-auto flex min-h-16 w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 px-4 py-3 sm:px-6 md:flex-nowrap md:gap-4 md:py-0 lg:gap-8"
         aria-label="Main navigation"
       >
         <a
@@ -50,22 +75,27 @@ function Header() {
           {menuOpen ? 'Close' : 'Menu'}
         </button>
         <ul
-          className={`${menuOpen ? 'flex' : 'hidden'} order-last w-full flex-col gap-2 border-t border-travel-border pt-3 text-sm font-medium text-travel-muted md:order-none md:flex md:w-auto md:flex-row md:items-center md:gap-8 md:border-0 md:pt-0`}
+          className={`${menuOpen ? 'flex' : 'hidden'} order-last w-full flex-col gap-2 border-t border-travel-border pt-3 text-sm font-medium text-travel-muted md:order-none md:flex md:w-auto md:flex-row md:items-center md:gap-4 md:border-0 md:pt-0 lg:gap-8`}
           id="primary-nav-links"
         >
           <li><a className="transition-colors hover:text-travel-accent" href="#hero" onClick={() => setMenuOpen(false)}>Home</a></li>
           <li><a className="transition-colors hover:text-travel-accent" href="#destinations" onClick={() => setMenuOpen(false)}>Destinations</a></li>
           <li><a className="transition-colors hover:text-travel-accent" href="#about" onClick={() => setMenuOpen(false)}>About</a></li>
           {!isPending && (isSignedIn ? (
-            <li>
-              <button
-                className="inline-flex min-h-10 items-center justify-center rounded-sm border border-travel-primary px-4 py-2 font-semibold text-travel-primary transition-colors hover:bg-travel-primary hover:text-white focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
-                type="button"
-                onClick={handleSignOut}
-              >
-                Sign out
-              </button>
-            </li>
+            <>
+              <li className="hidden md:flex">
+                <UserIdentity name={accountName} />
+              </li>
+              <li>
+                <button
+                  className="inline-flex min-h-10 items-center justify-center rounded-sm border border-travel-primary px-4 py-2 font-semibold text-travel-primary transition-colors hover:bg-travel-primary hover:text-white focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
+                  type="button"
+                  onClick={handleSignOut}
+                >
+                  Sign out
+                </button>
+              </li>
+            </>
           ) : (
             <>
               <li>
@@ -88,15 +118,20 @@ function Header() {
               </li>
             </>
           ))}
-          <li className="md:hidden">
+          <li className="lg:hidden">
             <a className="font-semibold text-travel-primary" href="#contact" onClick={() => setMenuOpen(false)}>
               Plan your trip
             </a>
           </li>
         </ul>
+        {isSignedIn && (
+          <div className="order-2 basis-full border-t border-travel-border pt-2 md:hidden">
+            <UserIdentity name={accountName} />
+          </div>
+        )}
         <a
           href="#contact"
-          className="hidden shrink-0 rounded border border-travel-primary px-4 py-2.5 text-sm font-semibold text-travel-primary transition-colors hover:bg-travel-primary hover:text-white focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent md:inline-flex"
+          className="hidden shrink-0 rounded border border-travel-primary px-4 py-2.5 text-sm font-semibold text-travel-primary transition-colors hover:bg-travel-primary hover:text-white focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent lg:inline-flex"
           onClick={() => setMenuOpen(false)}
         >
           Plan your trip
