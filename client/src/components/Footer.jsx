@@ -1,15 +1,17 @@
+import { Link } from 'react-router'
+
 // Site-wide footer with navigation and the agency's existing contact details.
 function Footer() {
   return (
     <footer className="bg-travel-primary-dark px-4 pb-6 pt-12 text-white sm:px-6 sm:pt-14">
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1.2fr]">
         <div className="sm:col-span-2 lg:col-span-1">
-          <a
-            href="#hero"
+          <Link
+            to="/#hero"
             className="text-xl font-extrabold tracking-[-0.06em] text-white"
           >
             Meridian<span> Journeys</span>
-          </a>
+          </Link>
           <p className="mt-3 text-sm text-white/75">
             Thoughtful journeys, unforgettable places.
           </p>
@@ -17,9 +19,9 @@ function Footer() {
         <div>
           <h2 className="mb-3 text-sm font-bold">Explore</h2>
           <ul className="grid content-start gap-2 text-sm text-white/75">
-            <li><a className="transition-colors hover:text-travel-accent" href="#hero">Home</a></li>
-            <li><a className="transition-colors hover:text-travel-accent" href="#destinations">Destinations</a></li>
-            <li><a className="transition-colors hover:text-travel-accent" href="#about">About us</a></li>
+            <li><Link className="transition-colors hover:text-travel-accent" to="/#hero">Home</Link></li>
+            <li><Link className="transition-colors hover:text-travel-accent" to="/#destinations">Destinations</Link></li>
+            <li><Link className="transition-colors hover:text-travel-accent" to="/#about">About us</Link></li>
           </ul>
         </div>
         <div className="grid content-start gap-2 text-sm text-white/75">

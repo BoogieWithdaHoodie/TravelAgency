@@ -307,11 +307,17 @@ function Destinations() {
                 key={destination.id}
               >
                 <div className="relative">
-                  <img
-                    src={destination.image}
-                    alt={destination.name}
-                    className="aspect-[16/10] w-full object-cover sm:aspect-[4/3]"
-                  />
+                  <Link
+                    className="block focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
+                    to={`/destinations/${encodeURIComponent(destination.id)}`}
+                    aria-label={`View details for ${destination.name}`}
+                  >
+                    <img
+                      src={destination.image}
+                      alt={destination.name}
+                      className="aspect-[16/10] w-full object-cover transition duration-200 hover:brightness-95 sm:aspect-[4/3]"
+                    />
+                  </Link>
                   {/* The parent owns saved state; each button receives its value and callback. */}
                   {isSignedIn && (
                     <SaveTripToggle
@@ -329,7 +335,12 @@ function Destinations() {
                     {destination.country} · {destination.category}
                   </p>
                   <h3 className="text-2xl font-semibold leading-tight tracking-[-0.035em] text-travel-ink">
+                    <Link
+                      className="transition-colors hover:text-travel-primary focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
+                      to={`/destinations/${encodeURIComponent(destination.id)}`}
+                    >
                     {destination.name}
+                    </Link>
                   </h3>
                   <p className="mb-5 mt-3 text-sm text-travel-muted">
                     {destination.description}

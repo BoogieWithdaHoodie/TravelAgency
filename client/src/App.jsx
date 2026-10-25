@@ -7,6 +7,7 @@ import About from './components/About.jsx'
 import TripCTA from './components/TripCTA.jsx'
 import Footer from './components/Footer.jsx'
 import Login from './components/Login.jsx'
+import DestinationDetails from './components/DestinationDetails.jsx'
 
 // Compose the public landing page from its independent sections.
 function HomePage() {
@@ -31,6 +32,7 @@ function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/destinations/:id" element={<DestinationDetails />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
