@@ -241,12 +241,13 @@ function DestinationDetails() {
                 </p>
               )}
 
-              <Link
-                className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-travel-accent px-6 py-3 text-sm font-bold text-[#1f2926] transition-colors hover:bg-[#e6c37e] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-primary sm:w-auto"
-                to="/#contact"
+              <button
+                className="mt-8 inline-flex min-h-12 w-full cursor-not-allowed items-center justify-center rounded-sm bg-travel-accent/60 px-6 py-3 text-sm font-bold text-[#1f2926]/70 sm:w-auto"
+                type="button"
+                disabled
               >
                 Plan this trip
-              </Link>
+              </button>
             </div>
           </article>
         )}
