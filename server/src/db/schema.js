@@ -109,3 +109,36 @@ export const savedDestinations = pgTable(
     primaryKey({ columns: [table.userId, table.destinationId] }),
   ],
 )
+
+// Store one purchase record for each Stripe Checkout attempt.
+export const orders = pgTable('orders', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  status: text('status').notNull().default('pending'),
+  totalAmount: integer('total_amount').notNull(),
+  currency: text('currency').notNull().default('usd'),
+  stripeCheckoutSessionId: text('stripe_checkout_session_id').unique(),
+  stripePaymentIntentId: text('stripe_payment_intent_id'),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+})
+
+// Store what was purchased and its price at the time of checkout.
+export const orderItems = pgTable('order_items', {
+  id: text('id').primaryKey(),
+  orderId: text('order_id')
+    .notNull()
+    .references(() => orders.id, { onDelete: 'cascade' }),
+  destinationId: text('destination_id')
+    .notNull()
+    .references(() => destinations.id),
+  destinationName: text('destination_name').notNull(),
+  quantity: integer('quantity').notNull().default(1),
+  unitPrice: integer('unit_price').notNull(),
+})
