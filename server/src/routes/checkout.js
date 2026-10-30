@@ -84,7 +84,7 @@ router.post('/', requireUser, async (req, res) => {
         userId: req.user.id,
         destinationId: destination.id,
       },
-      success_url: `${clientUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${clientUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&order_id=${encodeURIComponent(orderId)}`,
       cancel_url: `${clientUrl}/destinations/${encodeURIComponent(destination.id)}`,
     })
 

@@ -8,6 +8,7 @@ import { useSession } from '../lib/auth-client.js'
 function CheckoutSuccess() {
   const [searchParams] = useSearchParams()
   const sessionId = searchParams.get('session_id')
+  const orderIdFromUrl = searchParams.get('order_id')
   const { data: session, isPending: isSessionPending } = useSession()
   const [order, setOrder] = useState(null)
   const [error, setError] = useState('')
@@ -24,7 +25,8 @@ function CheckoutSuccess() {
       return undefined
     }
 
-    const orderId = sessionStorage.getItem('meridian-checkout-order-id')
+    const orderId = orderIdFromUrl
+      || sessionStorage.getItem('meridian-checkout-order-id')
     if (!orderId) {
       setError('This checkout order could not be found.')
       setIsPolling(false)
@@ -88,7 +90,7 @@ function CheckoutSuccess() {
       controller.abort()
       window.clearTimeout(timeoutId)
     }
-  }, [isSessionPending, session?.user])
+  }, [isSessionPending, session?.user, orderIdFromUrl])
 
   const isPaid = order?.status === 'paid'
   const statusText = isPaid
