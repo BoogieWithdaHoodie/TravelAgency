@@ -6,6 +6,7 @@ import { auth } from './auth.js'
 import destinationsRouter from './routes/destinations.js'
 import savedDestinationsRouter from './routes/saved-destinations.js'
 import checkoutRouter from './routes/checkout.js'
+import webhooksRouter from './routes/webhooks.js'
 
 const app = express()
 const port = Number(process.env.PORT) || 3000
@@ -22,6 +23,9 @@ app.use(cors({
 
 // Mount Better Auth before body-parsing middleware.
 app.all('/api/auth/*splat', toNodeHandler(auth))
+
+// Stripe requires the unparsed body to verify its webhook signature.
+app.use('/api/webhooks', webhooksRouter)
 
 app.use(express.json())
 
