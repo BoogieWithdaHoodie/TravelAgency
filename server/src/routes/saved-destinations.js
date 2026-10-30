@@ -1,24 +1,12 @@
 import { Router } from 'express'
-import { fromNodeHeaders } from 'better-auth/node'
 import { and, eq } from 'drizzle-orm'
-import { auth } from '../auth.js'
 import { db } from '../db/index.js'
 import { destinations, savedDestinations } from '../db/schema.js'
+import { requireUser } from '../middleware/require-user.js'
 
 const router = Router()
 
-router.use(async (req, res, next) => {
-  const session = await auth.api.getSession({
-    headers: fromNodeHeaders(req.headers),
-  })
-
-  if (!session?.user) {
-    return res.status(401).json({ error: 'Sign in to manage saved trips.' })
-  }
-
-  req.user = session.user
-  next()
-})
+router.use(requireUser)
 
 router.get('/', async (req, res) => {
   const savedTrips = await db
