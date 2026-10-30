@@ -362,12 +362,12 @@ function Destinations() {
                       </strong>
                     </li>
                   </ul>
-                  <a
-                    href="#contact"
+                  <Link
+                    to={`/destinations/${encodeURIComponent(destination.id)}`}
                     className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-travel-primary transition-colors hover:text-travel-accent focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent"
                   >
                     Plan this trip <span aria-hidden="true">&rarr;</span>
-                  </a>
+                  </Link>
                 </div>
               </article>
             ))}

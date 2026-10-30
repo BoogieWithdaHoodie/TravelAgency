@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from 'react-router'
+import { useEffect } from 'react'
+import { Navigate, Route, Routes, useLocation } from 'react-router'
 import Header from './components/Header.jsx'
 import Hero from './components/Hero.jsx'
 import Destinations from './components/Destinations.jsx'
@@ -9,6 +10,28 @@ import Footer from './components/Footer.jsx'
 import Login from './components/Login.jsx'
 import DestinationDetails from './components/DestinationDetails.jsx'
 import CheckoutSuccess from './components/CheckoutSuccess.jsx'
+
+function ScrollToHash() {
+  const { hash, pathname } = useLocation()
+
+  useEffect(() => {
+    if (!hash) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return undefined
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const target = document.querySelector(hash)
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    })
+
+    return () => window.cancelAnimationFrame(frameId)
+  }, [hash, pathname])
+
+  return null
+}
 
 // Compose the public landing page from its independent sections.
 function HomePage() {
@@ -30,13 +53,16 @@ function HomePage() {
 // Define the landing page and authentication page routes.
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/destinations/:id" element={<DestinationDetails />} />
-      <Route path="/checkout/success" element={<CheckoutSuccess />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <>
+      <ScrollToHash />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/destinations/:id" element={<DestinationDetails />} />
+        <Route path="/checkout/success" element={<CheckoutSuccess />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   )
 }
 
