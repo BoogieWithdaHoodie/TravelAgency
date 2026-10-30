@@ -7,6 +7,7 @@ import destinationsRouter from './routes/destinations.js'
 import savedDestinationsRouter from './routes/saved-destinations.js'
 import checkoutRouter from './routes/checkout.js'
 import webhooksRouter from './routes/webhooks.js'
+import ordersRouter from './routes/orders.js'
 
 const app = express()
 const port = Number(process.env.PORT) || 3000
@@ -36,6 +37,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/destinations', destinationsRouter)
 app.use('/api/saved-destinations', savedDestinationsRouter)
 app.use('/api/checkout', checkoutRouter)
+app.use('/api/orders', ordersRouter)
 
 // Log server errors and return a generic message to clients.
 app.use((error, req, res, next) => {

@@ -168,6 +168,10 @@ function DestinationDetails() {
         throw new Error('Stripe Checkout returned no redirect URL.')
       }
 
+      if (data.orderId) {
+        sessionStorage.setItem('meridian-checkout-order-id', data.orderId)
+      }
+
       window.location.assign(data.url)
     } catch (error) {
       setCheckoutError(error.message || 'Could not start checkout.')
