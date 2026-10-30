@@ -5,6 +5,7 @@ import { toNodeHandler } from 'better-auth/node'
 import { auth } from './auth.js'
 import destinationsRouter from './routes/destinations.js'
 import savedDestinationsRouter from './routes/saved-destinations.js'
+import checkoutRouter from './routes/checkout.js'
 
 const app = express()
 const port = Number(process.env.PORT) || 3000
@@ -30,6 +31,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/destinations', destinationsRouter)
 app.use('/api/saved-destinations', savedDestinationsRouter)
+app.use('/api/checkout', checkoutRouter)
 
 // Log server errors and return a generic message to clients.
 app.use((error, req, res, next) => {
