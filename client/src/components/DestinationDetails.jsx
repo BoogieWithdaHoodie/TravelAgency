@@ -20,6 +20,8 @@ function DestinationDetails() {
     error: '',
   })
   const [isSaving, setIsSaving] = useState(false)
+  const [isCheckingOut, setIsCheckingOut] = useState(false)
+  const [checkoutError, setCheckoutError] = useState('')
 
   useEffect(() => {
     const controller = new AbortController()
@@ -138,6 +140,41 @@ function DestinationDetails() {
     }
   }
 
+  async function handleCheckout() {
+    if (!userId || isCheckingOut) {
+      return
+    }
+
+    setIsCheckingOut(true)
+    setCheckoutError('')
+
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ destinationId: id }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || `Checkout failed (${response.status}).`)
+      }
+
+      if (!data.url) {
+        throw new Error('Stripe Checkout returned no redirect URL.')
+      }
+
+      window.location.assign(data.url)
+    } catch (error) {
+      setCheckoutError(error.message || 'Could not start checkout.')
+      setIsCheckingOut(false)
+    }
+  }
+
   const isSavedStatusLoading = isSignedIn && savedStatus.userId !== userId
   const isSaved = isSignedIn
     && savedStatus.userId === userId
@@ -241,12 +278,19 @@ function DestinationDetails() {
                 </p>
               )}
 
+              {checkoutError && (
+                <p className="mt-6 text-sm text-red-800" role="alert">
+                  {checkoutError}
+                </p>
+              )}
+
               <button
-                className="mt-8 inline-flex min-h-12 w-full cursor-not-allowed items-center justify-center rounded-sm bg-travel-accent/60 px-6 py-3 text-sm font-bold text-[#1f2926]/70 sm:w-auto"
+                className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-travel-accent px-6 py-3 text-sm font-bold text-[#1f2926] transition-colors hover:bg-travel-accent/90 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent disabled:cursor-not-allowed disabled:bg-travel-accent/60 disabled:text-[#1f2926]/70 sm:w-auto"
                 type="button"
-                disabled
+                disabled={!isSignedIn || isSessionPending || isCheckingOut}
+                onClick={handleCheckout}
               >
-                Plan this trip
+                {isCheckingOut ? 'Starting checkout...' : 'Buy now'}
               </button>
             </div>
           </article>
