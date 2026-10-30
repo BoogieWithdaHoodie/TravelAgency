@@ -141,7 +141,7 @@ function DestinationDetails() {
   }
 
   async function handleCheckout() {
-    if (!userId || isCheckingOut) {
+    if (isCheckingOut) {
       return
     }
 
@@ -161,6 +161,10 @@ function DestinationDetails() {
       const data = await response.json()
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Sign in before using checkout.')
+        }
+
         throw new Error(data.error || `Checkout failed (${response.status}).`)
       }
 
@@ -291,10 +295,10 @@ function DestinationDetails() {
               <button
                 className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-travel-accent px-6 py-3 text-sm font-bold text-[#1f2926] transition-colors hover:bg-travel-accent/90 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-travel-accent disabled:cursor-not-allowed disabled:bg-travel-accent/60 disabled:text-[#1f2926]/70 sm:w-auto"
                 type="button"
-                disabled={!isSignedIn || isSessionPending || isCheckingOut}
+                disabled={isSessionPending || isCheckingOut}
                 onClick={handleCheckout}
               >
-                {isCheckingOut ? 'Starting checkout...' : 'Buy now'}
+                {isCheckingOut ? 'Starting checkout...' : 'Order now'}
               </button>
             </div>
           </article>
